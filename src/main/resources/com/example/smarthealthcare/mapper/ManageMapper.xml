@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.smarthealthcare.mapper.ManageMapper">
+
+    <insert id="addPatient">
+insert into patient (name, sex, address, phoneNumber, userName) VALUES
+       ( #{name},#{sex},#{address},#{phoneNumber},#{userName})
+
+    </insert>
+
+
+    <insert id="setAccount">
+insert into logintable ( userName, indentify) VALUES
+(#{userName},1)
+
+
+    </insert>
+
+
+    <insert id="addDocter">
+
+        insert into docter ( name, sex, phoneNumber, room, degree, userName) VALUES
+            (#{name}, #{sex}, #{phoneNumber}, #{room}, #{degree}, #{userName})
+
+    </insert>
+
+
+
+    <insert id="setDocterAccount">
+
+    insert into logintable ( userName, indentify) VALUES
+        (#{userName},2)
+
+</insert>
+
+
+    <delete id="deleteAccount">
+
+        delete from logintable where userName=#{postUserName}
+
+    </delete>
+    
+    <delete id="deleteDocter">
+
+delete from docter where userName=#{postUserName}
+
+    </delete>
+
+
+    <select id="getPatientData" resultType="com.example.smarthealthcare.pojo.Patient">
+
+select * from patient
+        <where>
+
+            <if test="name!=null">name  like concat ('%',#{name},'%')</if>
+            <if test="sex!=null">and sex like concat ('%',#{sex},'%')</if>
+            <if test="address!=null">and address like concat ('%',#{address},'%')</if>
+            <if test="phoneNumber!=null">and phoneNumber like concat ('%',#{phoneNumber},'%')</if>
+
+        </where>
+
+
+    </select>
+
+    <update id="resetCode">
+
+
+update logintable
+    <set>
+       passWord="123456"
+    </set>
+
+    where userName=#{postUserName}
+
+    </update>
+
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.smarthealthcare.mapper.PatientMapper">
+
+    <select id="getInfo" resultType="com.example.smarthealthcare.pojo.Patient">
+
+select * from patient where userName=#{userName}
+
+
+    </select>
+
+
+    <select id="getUserId" resultType="integer">
+
+        select id from patient where userName=#{userName}
+    </select>
+
+    <select id="getUserIdByName" resultType="integer">
+
+        select id from patient where name=#{name}
+    </select>
+
+    <select id="getIllnessRecord" resultType="com.example.smarthealthcare.pojo.IllnessRecord">
+
+
+        select  p.name patientName,d.name docterName,kind,i.degree,i.time  from illnessrecord i,patient p,docter d
+        where i.patientId=p.id and i.docterId=d.id
+        and p.id=#{userId};
+
+
+    </select>
+
+    <select id="searchIllnessRecord" resultType="com.example.smarthealthcare.pojo.IllnessRecord">
+        select  p.name patientName,d.name docterName,kind,i.degree,i.time  from illnessrecord i,patient p,docter d
+        <where>
+
+            i.patientId=p.id
+            and i.docterId=d.id
+          and p.id=#{userId}
+
+<if test="records.docterName !=null">and d.name like concat ('%',#{records.docterName},'%') </if>
+<if test="records.kind !=null">and i.kind like concat ('%',#{records.kind},'%')</if>
+<if test="records.degree !=null"> and i.degree like concat ('%',#{records.degree},'%')</if>
+
+
+</where>
+
+order by #{records.time}
+
+    </select>
+
+
+    <select id="findDocter" resultType="com.example.smarthealthcare.pojo.Docter">
+
+        select * from docter
+<where>
+
+<if test="name!=null">name  like concat ('%',#{name},'%')</if>
+<if test="sex!=null">and sex like concat ('%',#{sex},'%')</if>
+<if test="room!=null">and room like concat ('%',#{room},'%')</if>
+<if test="degree!=null">and degree like concat ('%',#{degree},'%')</if>
+
+</where>
+
+    </select>
+
+<update id="changePassWord">
+    
+update  logintable
+<set>
+    
+<if test="passWord!=null">passWord=#{passWord}</if>
+
+
+</set>
+
+where userName=#{userName}
+
+</update>
+
+    <insert id="reservation">
+
+insert into reservation (patientId, docterId, startTime, endTime)
+values (#{patientId},#{docterId},#{reservations.startTime},#{reservations.endTime})
+
+
+
+
+    </insert>
+
+    <select id="checkReservationStatus" resultType="com.example.smarthealthcare.pojo.Reservation">
+
+select r.id, p.name patientName,p.userName patientUserName,d.name docterName,d.userName docterUserName,p.userName,d.userName,r.startTime,r.endTime ,d.room docterRoom from reservation r,patient p,docter d
+<where>
+    r.patientId=p.id and r.docterId = d.id and r.patientId=#{patientId}
+<if test="status!=null">and r.status=#{status}</if>
+
+    <if test="docterName!=null">and d.name  like concat ('%',#{docterName},'%')</if>
+
+</where>
+
+
+
+    </select>
+
+    <delete id="deleteReservation">
+
+delete from reservation where id=#{id}
+
+    </delete>
+
+
+</mapper>
+

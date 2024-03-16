@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.smarthealthcare.mapper.DocterMapper">
+
+    <select id="getInfo" resultType="com.example.smarthealthcare.pojo.Docter">
+
+select * from docter where userName=#{userName}
+
+    </select>
+
+
+<select id="getId" resultType="Integer">
+
+select id from docter where userName=#{userName}
+
+
+</select>
+
+    <select id="searchRecord" resultType="com.example.smarthealthcare.pojo.IllnessRecord">
+
+        select  p.name patientName,d.name docterName,kind,i.degree,i.time  from illnessrecord i,patient p,docter d
+        <where>
+
+            i.patientId=p.id
+            and i.docterId=d.id
+            and d.id=#{userId}
+            <if test="records.patientName !=null">and p.name like concat ('%',#{records.patientName},'%')  </if>
+            <if test="records.kind !=null">and i.kind like concat ('%',#{records.kind},'%') </if>
+            <if test="records.degree !=null"> and i.degree like concat ('%',#{records.degree},'%')</if>
+
+        </where>
+
+
+
+
+
+    </select>
+
+    <insert id="addRecord">
+
+        insert into illnessrecord (patientId, docterId, kind, degree, time)
+        values
+            (#{patientId}, #{docterId}, #{records.kind}, #{records.degree}, #{records.time})
+
+    </insert>
+
+<select id="getReservation" resultType="com.example.smarthealthcare.pojo.Reservation">
+
+    select r.id, p.name patientName,p.userName patientUserName,d.name docterName,d.userName docterUserName,p.userName,d.userName,r.startTime,r.endTime from reservation r,patient p,docter d
+    <where>
+        r.patientId=p.id and r.docterId = d.id and r.docterId=#{docterId}
+        <if test="status!=null">and r.status=#{status}</if>
+        <if test="patientName!=null">and p.name  like concat ('%',#{patientName},'%')</if>
+    </where>
+
+
+
+</select>
+
+    <update id="dealReservation">
+
+update reservation
+<set>
+status=#{status}
+
+
+</set>
+where id=#{id}
+
+    </update>
+
+</mapper>
