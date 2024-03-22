@@ -29,13 +29,18 @@ public interface PatientMapper {
 //    搜索患者病历
     List<IllnessRecord> searchIllnessRecord(Integer userId,@Param("records") IllnessRecord record);
 
-    List<Docter> findDocter(Docter d);
+
+    List<Docter> findDocter( Docter d);
+
+
 
     void changePassWord(String userName,String passWord);
 
     void reservation(Integer patientId,Integer docterId,@Param("reservations") Reservation reservation);
 
-    List<Reservation> checkReservationStatus(Integer patientId, Integer status, String docterName);
+    List<Reservation> checkReservationStatus(Integer patientId, Integer status, String docterName,Integer start,Integer pageSize);
 
     void deleteReservation(Integer id);
+
+    Long getTotal(Integer patientId, Integer status, String docterName);
 }

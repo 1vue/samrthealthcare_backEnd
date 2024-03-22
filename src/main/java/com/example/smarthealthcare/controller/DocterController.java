@@ -51,7 +51,7 @@ public class DocterController {
 
 //    查找就诊信息
     @PostMapping("/docter/searchRecord")
-    public result searchRecord(@RequestHeader("token") String token,IllnessRecord record){
+    public result searchRecord(@RequestHeader("token") String token,IllnessRecord record,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage){
 
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
@@ -66,9 +66,11 @@ public class DocterController {
 
 
 
-            List<IllnessRecord> list=docterService.searchRecord(userName,record);
+//            List<IllnessRecord> list=docterService.searchRecord(userName,record);
 
-            return result.success(list,indentify);
+            pagination_illnessrecord pagination_illnessrecord=docterService.searchRecord(userName,record,pageSize,currentPage);
+
+            return result.success(pagination_illnessrecord,indentify);
         } catch (Exception e) {
             // 处理异常，例如令牌无效或已过期
             log.error("处理请求时发生错误: " + e.getMessage());
@@ -110,7 +112,7 @@ public class DocterController {
     }
 
     @PostMapping("/docter/getReservation")
-    public result getReservation(@RequestHeader("token") String token,Integer status,String patientName)
+    public result getReservation(@RequestHeader("token") String token,Integer status,String patientName,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage)
     {
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
@@ -123,10 +125,10 @@ public class DocterController {
             log.info("当前用户用户名: " + userName);
             log.info("当前用户身份: " +indentify);
 
-         List<Reservation>reservationList= docterService.getReservation(userName,status,patientName);
+//         List<Reservation>reservationList= docterService.getReservation(userName,status,patientName);
 
-
-            return result.success(reservationList,indentify);
+pagination_Reservation paginationReservation=docterService.getReservation(userName,status,patientName,pageSize,currentPage);
+            return result.success(paginationReservation,indentify);
         } catch (Exception e) {
             // 处理异常，例如令牌无效或已过期
             log.error("处理请求时发生错误: " + e.getMessage());

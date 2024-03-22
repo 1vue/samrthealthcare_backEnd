@@ -2,19 +2,20 @@ package com.example.smarthealthcare.service.impl;
 
 import com.example.smarthealthcare.mapper.DocterMapper;
 import com.example.smarthealthcare.mapper.PatientMapper;
-import com.example.smarthealthcare.pojo.Docter;
-import com.example.smarthealthcare.pojo.IllnessRecord;
-import com.example.smarthealthcare.pojo.Patient;
-import com.example.smarthealthcare.pojo.Reservation;
+import com.example.smarthealthcare.pojo.*;
 import com.example.smarthealthcare.service.PatientService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
 @Slf4j
 @Service
+
 public class PatientServiceImpl implements PatientService {
 
 
@@ -39,18 +40,29 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<IllnessRecord> searchIllnessRecord(String userName, IllnessRecord record) {
+    public pagination_illnessrecord searchIllnessRecord(String userName, IllnessRecord record,Integer pageSize, Integer currentPage) {
         Integer userId=patientMapper.getUserId(userName);
 
         log.info(record.getKind());
-        return patientMapper.searchIllnessRecord(userId,record);
+
+        PageHelper.startPage(currentPage,pageSize);
+        List<IllnessRecord> illnessRecordList=patientMapper.searchIllnessRecord(userId,record);
+        Page<IllnessRecord> p=(Page<IllnessRecord>) illnessRecordList;
+        pagination_illnessrecord pagination=new pagination_illnessrecord(p.getResult(),p.getTotal());
+
+        return pagination;
     }
 
     @Override
-    public List<Docter> findDocter( Docter d) {
+    public pagination findDocter(Docter d, Integer pageSize, Integer currentPage) {
 
+        PageHelper.startPage(currentPage,pageSize);
+        List<Docter> docter=patientMapper.findDocter(d);
 
-        return patientMapper.findDocter(d);
+        Page<Docter> p=(Page<Docter>) docter;
+
+        pagination pagination=new pagination(p.getResult(),p.getTotal());
+        return  pagination;
     }
 
     @Override
@@ -72,13 +84,22 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<Reservation> checkReservationStatus(String userName, Integer status, String docterName) {
+    public pagination_Reservation checkReservationStatus(String userName, Integer status, String docterName,Integer pageSize, Integer currentPage) {
+
+
+       log.info(pageSize.toString());
+       log.info(currentPage.toString());
 
         Integer patientId=patientMapper.getUserId(userName);
 
+        Integer start=(currentPage-1)*pageSize;
 
-        log.info(docterName);
-        return patientMapper.checkReservationStatus(patientId,status,docterName);
+       List<Reservation> reservations =patientMapper.checkReservationStatus(patientId,status,docterName,start,pageSize);
+
+       Long total=patientMapper.getTotal(patientId,status,docterName);
+
+pagination_Reservation paginationReservation= new pagination_Reservation(reservations,total);
+        return paginationReservation;
     }
 
     @Override

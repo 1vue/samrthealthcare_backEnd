@@ -64,7 +64,8 @@ order by #{records.time}
 
 </where>
 
-    </select>
+ </select>
+
 
 <update id="changePassWord">
     
@@ -100,7 +101,7 @@ select r.id, p.name patientName,p.userName patientUserName,d.name docterName,d.u
     <if test="docterName!=null">and d.name  like concat ('%',#{docterName},'%')</if>
 
 </where>
-
+limit #{start},#{pageSize}
 
 
     </select>
@@ -111,6 +112,20 @@ delete from reservation where id=#{id}
 
     </delete>
 
+
+    <select id="getTotal" resultType="Long">
+        select count(*) from reservation r,patient p,docter d
+        <where>
+            r.patientId=p.id and r.docterId = d.id and r.patientId=#{patientId}
+            <if test="status!=null">and r.status=#{status}</if>
+
+            <if test="docterName!=null">and d.name  like concat ('%',#{docterName},'%')</if>
+
+        </where>
+
+
+
+    </select>
 
 </mapper>
 

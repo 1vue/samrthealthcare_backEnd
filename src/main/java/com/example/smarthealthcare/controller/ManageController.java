@@ -1,9 +1,6 @@
 package com.example.smarthealthcare.controller;
 
-import com.example.smarthealthcare.pojo.Docter;
-import com.example.smarthealthcare.pojo.IllnessRecord;
-import com.example.smarthealthcare.pojo.Patient;
-import com.example.smarthealthcare.pojo.result;
+import com.example.smarthealthcare.pojo.*;
 import com.example.smarthealthcare.service.IllnessRecordService;
 import com.example.smarthealthcare.service.ManageService;
 import com.example.smarthealthcare.utils.jwtUtils;
@@ -24,7 +21,7 @@ public class ManageController {
     @Autowired
     private IllnessRecordService illnessRecordService;
     @PostMapping("/manage/getAllRecord")
-    public result getAllRecord(@RequestHeader("token") String token,IllnessRecord i){
+    public result getAllRecord(@RequestHeader("token") String token,IllnessRecord i,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage){
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
             String jwt = token.replace("Bearer ", "");
@@ -36,10 +33,12 @@ public class ManageController {
             log.info("当前用户用户名: " + userName);
             log.info("当前用户身份: " +indentify);
 
-            List<IllnessRecord> illnessRecordList=illnessRecordService.getAllRecord(indentify,i);
+//            List<IllnessRecord> illnessRecordList=illnessRecordService.getAllRecord(indentify,i);
 
-            if(illnessRecordList!=null)
-                return result.success(illnessRecordList,indentify);
+            pagination_illnessrecord pagination_illnessrecord=illnessRecordService.getAllRecord(indentify,i,pageSize,currentPage);
+
+            if(pagination_illnessrecord!=null)
+                return result.success(pagination_illnessrecord,indentify);
             else
                 return result.error("权限不够",indentify);
 
@@ -53,7 +52,7 @@ public class ManageController {
 
 
     @PostMapping("/manage/getPatientData")
-    public result getPatientData(@RequestHeader("token") String token,Patient p)
+    public result getPatientData(@RequestHeader("token") String token,Patient p,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage)
     {
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
@@ -67,8 +66,13 @@ public class ManageController {
             log.info("当前用户身份: " +indentify);
 
             if(indentify==3) {
-               List<Patient> patientList=manageService.getPatientData(p);
-                return result.success(patientList, indentify);
+//               List<Patient> patientList=manageService.getPatientData(p);
+
+                pagination_patient pagination_patient=manageService.getPatientData(p,pageSize,currentPage);
+
+
+
+                return result.success(pagination_patient, indentify);
             }
             else
                 return result.error("权限不够",indentify);

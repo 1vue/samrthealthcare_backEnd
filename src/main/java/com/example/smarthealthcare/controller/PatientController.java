@@ -73,7 +73,7 @@ public class PatientController {
 
 //    搜索患者病历
     @PostMapping("/patient/searchRecord")
-    public result searchRecord(@RequestHeader("token") String token,IllnessRecord record){
+    public result searchRecord(@RequestHeader("token") String token,IllnessRecord record,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage){
 
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
@@ -86,9 +86,10 @@ public class PatientController {
             log.info("当前用户用户名: " + userName);
             log.info("当前用户身份: " +indentify);
 
-            List<IllnessRecord> illnessRecordList=patientService.searchIllnessRecord(userName,record);
+//            List<IllnessRecord> illnessRecordList=patientService.searchIllnessRecord(userName,record);
+pagination_illnessrecord pagination=patientService.searchIllnessRecord(userName,record,pageSize,currentPage);
 
-            return result.success(illnessRecordList,indentify);
+            return result.success(pagination,indentify);
         } catch (Exception e) {
             // 处理异常，例如令牌无效或已过期
             log.error("处理请求时发生错误: " + e.getMessage());
@@ -98,7 +99,7 @@ public class PatientController {
 
 //    患者查找医生
     @PostMapping("/patient/findDocter")
-    public result findDocter(@RequestHeader("token") String token,Docter d){
+    public result findDocter(@RequestHeader("token") String token,Docter d,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage ){
 
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
@@ -111,9 +112,16 @@ public class PatientController {
             log.info("当前用户用户名: " + userName);
             log.info("当前用户身份: " +indentify);
 
-            List<Docter> docters=patientService.findDocter(d);
 
-            return result.success(docters,indentify);
+
+            log.info("当前页面大小为 " +pageSize+"类型为"+pageSize.getClass().getName());
+            log.info("当前页面为第" +currentPage+"页"+"类型为"+pageSize.getClass().getName());
+            log.info(d.getName());
+//            List<Docter> docters=patientService.findDocter(d,pageSize,currentPage);
+
+            pagination pagination=patientService.findDocter(d,pageSize,currentPage);
+
+            return result.success(pagination,indentify);
         } catch (Exception e) {
             // 处理异常，例如令牌无效或已过期
             log.error("处理请求时发生错误: " + e.getMessage());
@@ -176,7 +184,7 @@ public class PatientController {
     }
 
     @PostMapping("/patient/checkReservationStatus")
-    public result checkReservationStatus(@RequestHeader("token") String token,Integer status,String docterName){
+    public result checkReservationStatus(@RequestHeader("token") String token,Integer status,String docterName,@RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "1") Integer currentPage){
         try {
             // 移除 "Bearer " 前缀，只保留令牌部分
             String jwt = token.replace("Bearer ", "");
@@ -188,10 +196,10 @@ public class PatientController {
             log.info("当前用户用户名: " + userName);
             log.info("当前用户身份: " +indentify);
 
-List<Reservation> reservationList=patientService.checkReservationStatus(userName,status,docterName);
+//List<Reservation> reservationList=patientService.checkReservationStatus(userName,status,docterName,pageSize,currentPage);
+pagination_Reservation paginationReservation=patientService.checkReservationStatus(userName,status,docterName,pageSize,currentPage);
 
-
-            return result.success(reservationList,indentify);
+            return result.success(paginationReservation,indentify);
         } catch (Exception e) {
             // 处理异常，例如令牌无效或已过期
             log.error("处理请求时发生错误: " + e.getMessage());

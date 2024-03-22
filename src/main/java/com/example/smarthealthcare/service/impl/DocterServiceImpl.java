@@ -2,10 +2,10 @@ package com.example.smarthealthcare.service.impl;
 
 import com.example.smarthealthcare.mapper.DocterMapper;
 import com.example.smarthealthcare.mapper.PatientMapper;
-import com.example.smarthealthcare.pojo.Docter;
-import com.example.smarthealthcare.pojo.IllnessRecord;
-import com.example.smarthealthcare.pojo.Reservation;
+import com.example.smarthealthcare.pojo.*;
 import com.example.smarthealthcare.service.DocterService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +30,17 @@ public class DocterServiceImpl implements DocterService {
 
 
     @Override
-    public List<IllnessRecord> searchRecord(String userName, IllnessRecord record) {
+    public pagination_illnessrecord searchRecord(String userName, IllnessRecord record,Integer pageSize, Integer currentPage) {
 
        Integer userId=docterMapper.getId(userName);
 
-        return docterMapper.searchRecord(userId,record);
+        PageHelper.startPage(currentPage,pageSize);
+        List<IllnessRecord> illnessRecordList=docterMapper.searchRecord(userId,record);
+        Page<IllnessRecord> p=(Page<IllnessRecord>) illnessRecordList;
+        pagination_illnessrecord pagination=new pagination_illnessrecord(p.getResult(),p.getTotal());
+
+        return pagination;
+
     }
 
     @Override
@@ -50,11 +56,15 @@ public class DocterServiceImpl implements DocterService {
     }
 
     @Override
-    public List<Reservation> getReservation(String userName, Integer status, String patientName) {
+    public pagination_Reservation getReservation(String userName, Integer status, String patientName, Integer pageSize, Integer currentPage) {
         Integer docterId=docterMapper.getId(userName);
+        PageHelper.startPage(currentPage,pageSize);
 
+        List<Reservation> reservations=docterMapper.getReservation(docterId,status,patientName);
+        Page<Reservation> p=(Page<Reservation>) reservations;
+        pagination_Reservation paginationReservation=new pagination_Reservation(p.getResult(),p.getTotal());
 
-        return docterMapper.getReservation(docterId,status,patientName);
+        return paginationReservation;
     }
 
     @Override
